@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - Warna Mandiri</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="login-page">
+    <main class="container login-container">
+        <section class="section login-card">
+            <div class="login-brand">
+                {% if pengaturan.logo %}
+                <img src="{{ url_for('static', filename='images/' + pengaturan.logo) }}" alt="Logo Warna Mandiri">
+                {% else %}
+                <span class="login-mark">WM</span>
+                {% endif %}
+            </div>
+            <span class="hero-kicker">AREA TERBATAS</span>
+            <h1>Login Dashboard Admin</h1>
+            <p>Masukkan password untuk mengelola barang, logo, dan pesanan.</p>
+
+            {% if pesan_error %}
+            <p class="pesan-error">{{ pesan_error }}</p>
+            {% endif %}
+
+            <form method="POST" class="form-barang">
+                <label for="password">Password Admin</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
+                <button type="submit">Masuk ke Dashboard</button>
+            </form>
+
+            <a href="{{ url_for('dashboard_pembeli') }}" class="tombol-kembali">Kembali ke Dashboard Pembeli</a>
+        </section>
+    </main>
+</body>
+
+</html>

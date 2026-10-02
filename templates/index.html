@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Warna Mandiri (WM)</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+     HEADER
+====================================================== -->
+
+    <header class="header">
+
+        <div class="logo">
+
+            {% if pengaturan.logo %}
+
+            <img src="{{ url_for('static', filename='images/' + pengaturan.logo) }}" alt="Logo Warna Mandiri">
+
+            {% else %}
+            <span>WM</span>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="header-text">
+
+            <h1>
+                Warna Mandiri (WM)
+            </h1>
+
+            <p>
+                Sistem Informasi Percetakan
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+     NAVIGASI
+====================================================== -->
+
+    <nav class="navbar">
+
+        <a href="/">
+            Dashboard Admin
+        </a>
+
+        <a href="{{ url_for('logout_admin') }}">
+            Keluar Admin
+        </a>
+
+        <a href="{{ url_for('dashboard_pembeli') }}">
+            Dashboard Pembeli
+        </a>
+
+        <a href="#tambah">
+            Tambah Barang
+        </a>
+
+        <a href="#daftar">
+            Daftar Barang
+        </a>
+
+        <a href="#logo">
+            Pengaturan Logo
+        </a>
+
+    </nav>
+
+
+    <main class="container">
+
+
+        <!-- =====================================================
+     DASHBOARD
+====================================================== -->
+
+        <section class="dashboard">
+
+            <h2>
+                Dashboard
+            </h2>
+
+
+            <div class="dashboard-container">
+
+
+                <div class="dashboard-card">
+
+                    <h3>
+                        {{ jumlah_barang }}
+                    </h3>
+
+                    <p>
+                        Jenis Barang
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <h3>
+                        {{ total_stok }}
+                    </h3>
+
+                    <p>
+                        Total Stok
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <h3>
+                        {{ stok_menipis }}
+                    </h3>
+
+                    <p>
+                        Stok Menipis
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <h3>
+                        {{ stok_habis }}
+                    </h3>
+
+                    <p>
+                        Stok Habis
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+     DAFTAR PESANAN
+====================================================== -->
+
+        <section class="section" id="pesanan">
+
+            <h2>Daftar Pesanan Pembeli</h2>
+
+            {% if daftar_pesanan %}
+            <div class="pesanan-table-wrapper">
+                <table class="pesanan-table">
+                    <thead>
+                        <tr>
+                            <th>Waktu</th>
+                            <th>Pemesan</th>
+                            <th>Barang</th>
+                            <th>Jumlah</th>
+                            <th>Pembayaran</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pesanan in daftar_pesanan %}
+                        <tr>
+                            <td>{{ pesanan.waktu_pemesanan|default('-', true) }}</td>
+                            <td>{{ pesanan.nama_pemesan|default('-', true) }}<br><small>{{
+                                    pesanan.nomor_telepon|default('-', true) }}</small></td>
+                            <td>{{ pesanan.nama_barang|default('-', true) }}</td>
+                            <td>{{ pesanan.jumlah|default(0, true) }}</td>
+                            <td>{{ pesanan.metode_pembayaran|default('-', true) }}</td>
+                            <td>Rp {{ "{:,}".format(pesanan.total|default(0, true)).replace(",", ".") }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('ubah_status_pesanan', id=pesanan.id) }}"
+                                    class="status-pesanan-form">
+                                    {% set status_pesanan = pesanan.status|default('Masih Proses', true) %}
+                                    <select name="status" aria-label="Status pesanan {{ pesanan.nama_pemesan|default('', true) }}"
+                                        onchange="this.form.submit()">
+                                        <option value="Masih Proses" {% if status_pesanan == "Masih Proses" %}selected{% endif %}>Masih Proses</option>
+                                        <option value="Selesai" {% if status_pesanan == "Selesai" %}selected{% endif %}>Selesai</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="aksi-pesanan">
+                                <a href="https://wa.me/{{ whatsapp_admin }}" target="_blank" rel="noopener"
+                                    class="tombol-whatsapp">{{ whatsapp_admin }}</a>
+                                <form method="POST" action="{{ url_for('hapus_pesanan', id=pesanan.id) }}"
+                                    onsubmit="return konfirmasiHapusPesanan();">
+                                    <button type="submit" class="tombol-hapus">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="pesanan-kosong">Belum ada pesanan dari pembeli.</p>
+            {% endif %}
+
+        </section>
+
+
+        <!-- =====================================================
+     PENCARIAN
+====================================================== -->
+
+        <section class="section">
+
+            <h2>
+                Pencarian Barang
+            </h2>
+
+
+            <form method="POST" class="search-form">
+
+                <input type="text" name="kata_kunci" placeholder="Cari nama, kode, atau kategori barang...">
+
+
+                <button type="submit">
+                    Cari
+                </button>
+
+
+                <button type="button" onclick="bersihkanPencarian()">
+                    Bersihkan
+                </button>
+
+            </form>
+
+
+            {% if hasil %}
+
+            <div class="hasil-pencarian">
+
+                <h3>
+                    Hasil Pencarian
+                </h3>
+
+
+                {% if hasil.gambar %}
+
+                <img class="gambar-hasil" src="{{ url_for('static', filename='uploads/' + hasil.gambar) }}"
+                    alt="{{ hasil.nama }}">
+
+                {% endif %}
+
+
+                <p>
+                    <strong>Index:</strong>
+                    {{ hasil.index }}
+                </p>
+
+                <p>
+                    <strong>Nama:</strong>
+                    {{ hasil.nama }}
+                </p>
+
+                <p>
+                    <strong>Kode:</strong>
+                    {{ hasil.kode }}
+                </p>
+
+                <p>
+                    <strong>Kategori:</strong>
+                    {{ hasil.kategori }}
+                </p>
+
+                <p>
+                    <strong>Harga:</strong>
+                    Rp {{ "{:,}".format(hasil.harga).replace(",", ".") }}
+                </p>
+
+                <p>
+                    <strong>Stok:</strong>
+                    {{ hasil.stok }}
+                </p>
+
+                <p>
+                    <strong>Satuan:</strong>
+                    {{ hasil.satuan }}
+                </p>
+
+                <p>
+                    <strong>Kondisi:</strong>
+                    {{ hasil.kondisi }}
+                </p>
+
+            </div>
+
+            {% elif pesan %}
+
+            <p class="pesan-error">
+                {{ pesan }}
+            </p>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- =====================================================
+     UPLOAD LOGO
+====================================================== -->
+
+        <section class="section" id="logo">
+
+            <h2>
+                Pengaturan Logo
+            </h2>
+
+
+            <p>
+                Upload logo dari perangkat untuk ditampilkan pada header.
+            </p>
+
+
+            <form action="{{ url_for('upload_logo') }}" method="POST" enctype="multipart/form-data" class="form-barang">
+
+                <label for="logo">
+                    Pilih Logo
+                </label>
+
+
+                <input type="file" id="logo" name="logo" accept="image/*" required>
+
+
+                <div class="preview-logo-container">
+
+                    <img id="previewLogo" class="preview-logo" src="#" alt="Preview Logo">
+
+                </div>
+
+
+                <button type="submit">
+                    Upload Logo
+                </button>
+
+            </form>
+
+            <div class="payment-settings">
+                <h3>QRIS Pembayaran</h3>
+                <p>Upload gambar QRIS resmi agar dapat ditampilkan pada halaman penyelesaian pesanan.</p>
+                <form action="{{ url_for('upload_qris') }}" method="POST" enctype="multipart/form-data"
+                    class="form-barang">
+                    <label for="qris">Pilih Gambar QRIS</label>
+                    <input type="file" id="qris" name="qris" accept="image/png,image/jpeg,image/webp" required>
+                    <button type="submit">Simpan QRIS</button>
+                </form>
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+     TAMBAH BARANG
+====================================================== -->
+
+        <section class="section" id="tambah">
+
+            <h2>
+                Tambah Barang
+            </h2>
+
+
+            <form action="{{ url_for('tambah_barang') }}" method="POST" enctype="multipart/form-data"
+                class="form-barang" id="formBarang">
+
+
+                <label for="nama">
+                    Nama Barang
+                </label>
+
+                <input type="text" id="nama" name="nama" required>
+
+
+                <label for="kode">
+                    Kode Barang
+                </label>
+
+                <input type="text" id="kode" name="kode" required>
+
+
+                <label for="kategori">
+                    Kategori
+                </label>
+
+                <input type="text" id="kategori" name="kategori" required>
+
+
+                <label for="harga">
+                    Harga
+                </label>
+
+                <input type="number" id="harga" name="harga" required>
+
+
+                <label for="stok">
+                    Stok
+                </label>
+
+                <input type="number" id="stok" name="stok" required>
+
+
+                <label for="satuan">
+                    Satuan
+                </label>
+
+                <select id="satuan" name="satuan">
+
+                    <option value="Pcs">
+                        Pcs
+                    </option>
+
+                    <option value="Meter">
+                        Meter
+                    </option>
+
+                    <option value="Lembar">
+                        Lembar
+                    </option>
+
+                </select>
+
+
+                <label for="kondisi">
+                    Kondisi
+                </label>
+
+                <select id="kondisi" name="kondisi">
+
+                    <option value="Baik">
+                        Baik
+                    </option>
+
+                    <option value="Rusak">
+                        Rusak
+                    </option>
+
+                    <option value="Habis">
+                        Habis
+                    </option>
+
+                </select>
+
+
+                <label for="lokasi">
+                    Lokasi Barang
+                </label>
+
+                <input type="text" id="lokasi" name="lokasi" placeholder="Contoh: Rak A1" required>
+
+
+                <label for="gambar">
+                    Foto Barang
+                </label>
+
+                <input type="file" id="gambar" name="gambar" accept="image/*">
+
+
+                <img id="preview" class="preview-gambar" src="#" alt="Preview">
+
+
+                <button type="submit">
+                    Simpan Barang
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- =====================================================
+     DAFTAR BARANG
+====================================================== -->
+
+        <section class="section" id="daftar">
+
+            <h2>
+                Daftar Barang
+            </h2>
+
+
+            <div class="produk-container">
+
+
+                {% for barang in data_barang %}
+
+                <div class="produk-card">
+
+                    <a href="{{ url_for('detail_barang', index=loop.index0) }}" class="produk-edit-link"
+                        aria-label="Lihat detail {{ barang.nama }}">
+
+                        {% if barang.gambar %}
+
+                        <img src="{{ url_for('static', filename='uploads/' + barang.gambar) }}" alt="{{ barang.nama }}"
+                            class="gambar-produk">
+
+                        {% else %}
+
+                        <div class="tidak-ada-gambar">
+                            Tidak ada foto
+                        </div>
+
+                        {% endif %}
+
+
+                        <div class="produk-info">
+
+                            <h3>
+                                {{ barang.nama }}
+                            </h3>
+
+
+                            <p>
+                                <strong>Kode:</strong>
+                                {{ barang.kode }}
+                            </p>
+
+
+                            <p>
+                                <strong>Kategori:</strong>
+                                {{ barang.kategori }}
+                            </p>
+
+
+                            <p>
+                                <strong>Harga:</strong>
+                                Rp {{ "{:,}".format(barang.harga).replace(",", ".") }}
+                            </p>
+
+
+                            <p>
+                                <strong>Stok:</strong>
+                                {{ barang.stok }}
+                                {{ barang.satuan }}
+                            </p>
+
+
+                            {% if barang.stok == 0 %}
+
+                            <span class="status habis">
+                                Stok habis
+                            </span>
+
+                            {% elif barang.stok <= 10 %} <span class="status menipis">
+                                Stok menipis
+                                </span>
+
+                                {% else %}
+
+                                <span class="status tersedia">
+                                    Stok tersedia
+                                </span>
+
+                                {% endif %}
+
+
+                                <p>
+                                    <strong>Kondisi:</strong>
+                                    {{ barang.kondisi }}
+                                </p>
+
+
+                                <p>
+                                    <strong>Lokasi:</strong>
+                                    {{ barang.lokasi }}
+                                </p>
+
+
+                        </div>
+
+                    </a>
+
+                    <div class="produk-aksi">
+                        <a href="{{ url_for('hapus_barang', index=loop.index0) }}" class="tombol-hapus"
+                            onclick="return konfirmasiHapus()">
+                            Hapus
+                        </a>
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+     FOOTER
+====================================================== -->
+
+    <footer class="footer">
+
+        <p>
+            © 2026 Warna Mandiri (WM)
+        </p>
+
+        <p>
+            Jl. Opu Daeng Risadju No.204/214, Mario, Kec.Mariso, Kota Makassar, Sulawesi Selatan 90125
+        </p>
+        <p>
+            Sistem Informasi Percetakan
+        </p>
+
+    </footer>
+
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+</body>
+
+</html>

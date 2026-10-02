@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemesanan {{ barang.nama }} - Warna Mandiri</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            {% if pengaturan.logo %}
+            <img src="{{ url_for('static', filename='images/' + pengaturan.logo) }}" alt="Logo Warna Mandiri">
+            {% else %}
+            <span>WM</span>
+            {% endif %}
+        </div>
+        <div class="header-text">
+            <h1>Warna Mandiri (WM)</h1>
+            <p>Pemesanan Barang</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="section pesanan-panel">
+            <a href="{{ url_for('dashboard_pembeli') }}" class="kembali-link">&larr; Kembali ke katalog</a>
+            <h2>Pesan {{ barang.nama }}</h2>
+            <div class="detail-info">
+                <p><strong>Harga satuan:</strong> Rp {{ "{:,}".format(barang.harga).replace(",", ".") }}</p>
+                <p><strong>Stok tersedia:</strong> {{ barang.stok }} {{ barang.satuan }}</p>
+                <p><strong>Lokasi barang:</strong> {{ barang.get('lokasi', 'Lokasi belum diatur') }}</p>
+            </div>
+
+            {% if pesanan %}
+            <div class="pesanan-sukses">
+                <h3>Pesanan berhasil dibuat</h3>
+                <p>Terima kasih, {{ pesanan.nama_pemesan }}. Silakan simpan detail pesanan berikut.</p>
+                <p><strong>Barang:</strong> {{ barang.nama }}</p>
+                <p><strong>Jumlah:</strong> {{ pesanan.jumlah }} {{ barang.satuan }}</p>
+                <p><strong>Total:</strong> Rp {{ "{:,}".format(pesanan.total).replace(",", ".") }}</p>
+                <p><strong>Pembayaran:</strong> {{ pesanan.metode_pembayaran }}</p>
+                {% if pesanan.bukti_filename %}
+                <p><strong>Bukti pembayaran:</strong> {{ pesanan.bukti_filename }}</p>
+                {% endif %}
+                <p><strong>Lokasi pengambilan:</strong> {{ alamat_toko }}</p>
+                {% if pesanan.metode_pembayaran in ["BNI", "BCA", "MANDIRI", "Transfer"] %}
+                <div class="payment-instructions">
+                    <h4>Instruksi Transfer</h4>
+                    <p>Transfer sesuai total pesanan ke rekening {{ pesanan.metode_pembayaran if
+                        pesanan.metode_pembayaran != "Transfer" else "pilihan Anda" }}:</p>
+                    <div class="rekening-list">
+                        {% for rekening in rekening_pembayaran %}
+                        {% if pesanan.metode_pembayaran == "Transfer" or pesanan.metode_pembayaran == rekening.bank %}
+                        <div class="rekening-item">
+                            <strong>{{ rekening.bank }}</strong>
+                            <span>{{ rekening.nomor }}</span>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p class="payment-owner">Semua rekening atas nama <strong>{{ pemilik_rekening }}</strong>.</p>
+                </div>
+                {% elif pesanan.metode_pembayaran == "QRIS" %}
+                <div class="payment-instructions qris-instructions">
+                    <h4>Instruksi Pembayaran QRIS</h4>
+                    {% if qris_tersedia %}
+                    <img src="{{ url_for('static', filename='images/' + qris_filename) }}" alt="QRIS Warna Mandiri"
+                        class="qris-image">
+                    <p>Scan QRIS di atas dan bayar sesuai total pesanan.</p>
+                    {% else %}
+                    <p class="pesan-error">QRIS belum diunggah oleh admin. Silakan pilih Transfer atau Cash.</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <div class="admin-contact">
+                    <a href="https://wa.me/{{ whatsapp_admin }}" target="_blank" rel="noopener">0812 4475 9936</a>
+                </div>
+                <a href="{{ url_for('dashboard_pembeli') }}" class="tombol-pesan">Kembali ke katalog</a>
+            </div>
+            {% else %}
+            {% if pesan_error %}
+            <p class="pesan-error">{{ pesan_error }}</p>
+            {% endif %}
+            <form method="POST" enctype="multipart/form-data" class="form-barang pesanan-form">
+                <label for="nama_pemesan">Nama Pemesan</label>
+                <input type="text" id="nama_pemesan" name="nama_pemesan" required>
+
+                <label for="nomor_telepon">Nomor Telepon</label>
+                <input type="tel" id="nomor_telepon" name="nomor_telepon" required>
+
+                <label for="jumlah">Jumlah ({{ barang.satuan }})</label>
+                <input type="number" id="jumlah" name="jumlah" min="1" max="{{ barang.stok }}" value="1" required>
+
+                <fieldset class="pembayaran-options">
+                    <legend>Metode Pembayaran</legend>
+                    <label class="payment-choice"><input type="radio" name="metode_pembayaran" value="Cash" checked>
+                        <span>Cash</span></label>
+                    {% for rekening in rekening_pembayaran %}
+                    <label class="payment-choice"><input type="radio" name="metode_pembayaran"
+                            value="{{ rekening.bank }}"> <span>{{ rekening.bank }}</span></label>
+                    {% endfor %}
+                    <label class="payment-choice"><input type="radio" name="metode_pembayaran" value="QRIS">
+                        <span>QRIS</span></label>
+                </fieldset>
+
+                <div class="payment-reference">
+                    <strong>Rekening pembayaran:</strong> BNI, BCA, dan MANDIRI atas nama {{ pemilik_rekening }}.
+                </div>
+
+                <div class="payment-details">
+                    {% for rekening in rekening_pembayaran %}
+                    <div class="transfer-details payment-method-panel" data-payment-method="{{ rekening.bank }}" hidden>
+                        <h4>Rekening Transfer</h4>
+                        <div class="rekening-list">
+                            <div class="rekening-item">
+                                <strong>{{ rekening.bank }}</strong>
+                                <span>{{ rekening.nomor }}</span>
+                            </div>
+                        </div>
+                        <p class="payment-owner">Atas nama <strong>{{ pemilik_rekening }}</strong></p>
+                    </div>
+                    {% endfor %}
+
+                    <div class="qris-details payment-method-panel" data-payment-method="QRIS" hidden>
+                        <h4>Pembayaran QRIS</h4>
+                        {% if qris_tersedia %}
+                        <img src="{{ url_for('static', filename='images/' + qris_filename) }}" alt="QRIS Warna Mandiri"
+                            class="qris-image">
+                        <p>Scan QRIS dan bayar sesuai total pesanan.</p>
+                        {% else %}
+                        <p class="qris-unavailable">QRIS belum tersedia. Silakan gunakan Transfer atau Cash.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="payment-proof-field">
+                    <label for="bukti_pembayaran">Bukti Pembayaran <span id="proofOptional">(opsional untuk
+                            Cash)</span></label>
+                    <input type="file" id="bukti_pembayaran" name="bukti_pembayaran"
+                        accept="image/png,image/jpeg,image/webp">
+                    <small>Format JPG, PNG, atau WEBP. Untuk transfer dan QRIS, bukti wajib diunggah.</small>
+                </div>
+
+                <button type="submit">Kirim Pemesanan</button>
+            </form>
+            {% endif %}
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

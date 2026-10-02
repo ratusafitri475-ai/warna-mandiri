@@ -1,0 +1,52 @@
+[
+    {
+        "id": "a3ba367db9cb4c73836224ca79ef0e66",
+        "waktu_pemesanan": "2026-09-17T22:29:39",
+        "nama_barang": "Spanduk",
+        "kode_barang": "SPD001",
+        "nama_pemesan": "ratu",
+        "nomor_telepon": "085757839932",
+        "jumlah": 1,
+        "metode_pembayaran": "BNI",
+        "total": 25000,
+        "bukti_filename": "ec190b0d63a5484cafa2b61cc2e6d2b7.jpeg"
+    },
+    {
+        "id": "a3c8149eff444bf7b4fb875b5c857e5a",
+        "waktu_pemesanan": "2026-09-17T22:30:51",
+        "nama_barang": "Spanduk",
+        "kode_barang": "SPD001",
+        "nama_pemesan": "ratu",
+        "nomor_telepon": "085757839932",
+        "jumlah": 1,
+        "metode_pembayaran": "Cash",
+        "total": 25000,
+        "bukti_filename": "",
+        "status": "Selesai"
+    },
+    {
+        "id": "3e3cd320453f499a871833c89d31d46c",
+        "waktu_pemesanan": "2026-09-17T22:33:49",
+        "nama_barang": "Stiker Biasa",
+        "kode_barang": "STK001",
+        "nama_pemesan": "awan",
+        "nomor_telepon": "0909090",
+        "jumlah": 1,
+        "metode_pembayaran": "Cash",
+        "total": 15000,
+        "bukti_filename": ""
+    },
+    {
+        "id": "8abf8f132d8042fb88a5c6ae89298b65",
+        "waktu_pemesanan": "2026-09-18T12:45:03",
+        "nama_barang": "Lanyard",
+        "kode_barang": "LNY001",
+        "nama_pemesan": "ratu",
+        "nomor_telepon": "0909090",
+        "jumlah": 1,
+        "metode_pembayaran": "Cash",
+        "total": 10000,
+        "bukti_filename": "",
+        "status": "Selesai"
+    }
+]

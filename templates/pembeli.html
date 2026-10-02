@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pembeli - Warna Mandiri</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            {% if pengaturan.logo %}
+            <img src="{{ url_for('static', filename='images/' + pengaturan.logo) }}" alt="Logo Warna Mandiri">
+            {% else %}
+            <span>WM</span>
+            {% endif %}
+        </div>
+        <div class="header-text">
+            <h1>Warna Mandiri (WM)</h1>
+            <p>Dashboard Pembeli</p>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <a href="{{ url_for('dashboard_pembeli') }}">Katalog Barang</a>
+        <a href="#lokasi">Lokasi Toko</a>
+    </nav>
+
+    <main class="container">
+        <section class="dashboard pembeli-hero">
+            <div class="pembeli-hero-copy">
+                <span class="hero-kicker">KATALOG WARNA MANDIRI</span>
+                <h2>Pesan Barang Percetakan</h2>
+                <p>Pilih kebutuhan cetak Anda, cek stok dan lokasi barang, lalu lakukan pemesanan dengan cara pembayaran
+                    yang paling nyaman.</p>
+                <a href="#katalog" class="hero-action">Lihat katalog barang <span aria-hidden="true">&#8595;</span></a>
+            </div>
+
+            <div class="pembeli-hero-panel">
+                <div class="hero-panel-heading">
+                    <span class="hero-panel-icon" aria-hidden="true">WM</span>
+                    <div>
+                        <strong>Belanja lebih terarah</strong>
+                        <span>{{ data_barang|length }} pilihan barang tersedia</span>
+                    </div>
+                </div>
+                <div class="hero-steps">
+                    <div class="hero-step">
+                        <span>01</span>
+                        <p>Pilih barang</p>
+                    </div>
+                    <div class="hero-step">
+                        <span>02</span>
+                        <p>Isi pesanan</p>
+                    </div>
+                    <div class="hero-step">
+                        <span>03</span>
+                        <p>Pilih pembayaran</p>
+                    </div>
+                </div>
+                <div class="hero-payment-note">
+                    <span>Pembayaran tersedia</span>
+                    <strong>Cash &middot; Transfer &middot; QRIS</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="katalog">
+            <h2>Katalog Barang</h2>
+            <div class="produk-container">
+                {% for barang in data_barang %}
+                <article class="produk-card">
+                    {% if barang.gambar %}
+                    <img src="{{ url_for('static', filename='uploads/' + barang.gambar) }}" alt="{{ barang.nama }}"
+                        class="gambar-produk">
+                    {% else %}
+                    <div class="tidak-ada-gambar">Tidak ada foto</div>
+                    {% endif %}
+                    <div class="produk-info">
+                        <h3>{{ barang.nama }}</h3>
+                        <p><strong>Kategori:</strong> {{ barang.kategori }}</p>
+                        <p><strong>Harga:</strong> Rp {{ "{:,}".format(barang.harga).replace(",", ".") }}</p>
+                        <p><strong>Stok:</strong> {{ barang.stok }} {{ barang.satuan }}</p>
+                        <p><strong>Lokasi:</strong> {{ barang.get('lokasi', 'Lokasi belum diatur') }}</p>
+                        {% if barang.stok > 0 %}
+                        <a href="{{ url_for('pesan_barang', index=loop.index0) }}" class="tombol-pesan">Pesan Barang</a>
+                        {% else %}
+                        <span class="status habis">Stok habis</span>
+                        {% endif %}
+                    </div>
+                </article>
+                {% else %}
+                <p>Belum ada barang yang tersedia.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="section" id="lokasi">
+            <h2>Lokasi Toko</h2>
+            <p>{{ alamat_toko }}</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Warna Mandiri (WM)</p>
+    </footer>
+</body>
+
+</html>

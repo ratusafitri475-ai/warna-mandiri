@@ -1,0 +1,79 @@
+[
+    {
+        "nama": "Spanduk",
+        "kode": "SPD001",
+        "kategori": "Media Cetak",
+        "harga": 25000,
+        "stok": 15,
+        "satuan": "Meter",
+        "kondisi": "Baik",
+        "gambar": "spanduk.jpg",
+        "lokasi": "Jl. Opu Daeng Risadju No.204/214, Mario, Kec.Mariso, Kota Makassar, Sulawesi Selatan 90125"
+    },
+    {
+        "nama": "Lanyard",
+        "kode": "LNY001",
+        "kategori": "Aksesoris",
+        "harga": 10000,
+        "stok": 8,
+        "satuan": "Pcs",
+        "kondisi": "Baik",
+        "gambar": "lanyard.jpg",
+        "lokasi": "Jl. Opu Daeng Risadju No.204/214, Mario, Kec.Mariso, Kota Makassar, Sulawesi Selatan 90125"
+    },
+    {
+        "nama": "Stempel Custom",
+        "kode": "STM001",
+        "kategori": "Percetakan",
+        "harga": 50000,
+        "stok": 5,
+        "satuan": "Pcs",
+        "kondisi": "Baik",
+        "gambar": "Stempel custom.jpg",
+        "lokasi": "Jl. Opu Daeng Risadju No.204/214, Mario, Kec.Mariso, Kota Makassar, Sulawesi Selatan 90125"
+    },
+    {
+        "nama": "Stiker Biasa",
+        "kode": "STK001",
+        "kategori": "Stiker",
+        "harga": 15000,
+        "stok": 20,
+        "satuan": "Lembar",
+        "kondisi": "Baik",
+        "gambar": "stiker biasa.jpg",
+        "lokasi": "Jl. Opu Daeng Risadju No.204/214, Mario, Kec.Mariso, Kota Makassar, Sulawesi Selatan 90125"
+    },
+    {
+        "nama": "Stiker Cutting",
+        "kode": "STK002",
+        "kategori": "Stiker",
+        "harga": 20000,
+        "stok": 10,
+        "satuan": "Lembar",
+        "kondisi": "Baik",
+        "gambar": "stiker cutting.jpg",
+        "lokasi": "Jl. Opu Daeng Risadju No.204/214, Mario, Kec.Mariso, Kota Makassar, Sulawesi Selatan 90125"
+    },
+    {
+        "nama": "Stiker Cina",
+        "kode": "STK003",
+        "kategori": "Stiker",
+        "harga": 18000,
+        "stok": 978,
+        "satuan": "Lembar",
+        "kondisi": "Baik",
+        "gambar": "stiker china.jpg",
+        "lokasi": "Jl. Opu Daeng Risadju No.204/214, Mario, Kec.Mariso, Kota Makassar, Sulawesi Selatan 90125"
+    },
+    {
+        "nama": "X-Banner",
+        "kode": "XBN001",
+        "kategori": "Media Promosi",
+        "harga": 75000,
+        "stok": 7,
+        "satuan": "Pcs",
+        "kondisi": "Baik",
+        "gambar": "x-banner.jpg",
+        "lokasi": "Jl. Opu Daeng Risadju No.204/214, Mario, Kec.Mariso, Kota Makassar, Sulawesi Selatan 90125"
+    }
+]

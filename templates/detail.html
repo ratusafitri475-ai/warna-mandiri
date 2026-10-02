@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ barang.nama }} - Warna Mandiri</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+
+            {% if pengaturan.logo %}
+            <img src="{{ url_for('static', filename='images/' + pengaturan.logo) }}" alt="Logo Warna Mandiri">
+            {% else %}
+            <span>WM</span>
+            {% endif %}
+
+        </div>
+        <div class="header-text">
+            <h1>Warna Mandiri (WM)</h1>
+            <p>Detail Barang</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="section detail-barang">
+            <a href="{{ url_for('index', _anchor='daftar') }}" class="kembali-link">&larr; Kembali ke Daftar Barang</a>
+
+            <h2>{{ barang.nama }}</h2>
+
+            {% if barang.gambar %}
+            <img src="{{ url_for('static', filename='uploads/' + barang.gambar) }}" alt="{{ barang.nama }}"
+                class="detail-gambar">
+            {% else %}
+            <div class="detail-gambar tidak-ada-gambar">Tidak ada foto</div>
+            {% endif %}
+
+            <div class="detail-info">
+                <p><strong>Harga:</strong> Rp {{ "{:,}".format(barang.harga).replace(",", ".") }}</p>
+                <p><strong>Stok:</strong> {{ barang.stok }} {{ barang.satuan }}</p>
+                <p><strong>Lokasi barang:</strong> {{ barang.get('lokasi', 'Lokasi belum diatur') }}</p>
+            </div>
+
+            <div class="alamat-toko">
+                <h3>Alamat Toko</h3>
+                <p>{{ alamat_toko }}</p>
+            </div>
+
+            <a href="{{ url_for('pesan_barang', index=index) }}" class="tombol-pesan">Pesan Barang</a>
+            <a href="{{ url_for('edit_barang', index=index) }}" class="tombol-edit">Edit Barang</a>
+            <a href="{{ url_for('index', _anchor='daftar') }}" class="tombol-kembali">Kembali ke katalog admin</a>
+        </section>
+    </main>
+</body>
+
+</html>
